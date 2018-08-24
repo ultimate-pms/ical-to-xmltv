@@ -19,6 +19,7 @@ six==1.11.0
 
 import icalendar
 import xmltv
+import sys
 
 ical_file = open("./basic.ics", 'rb')
 xmltv_file = open("./basic.xml", 'w')
@@ -27,7 +28,7 @@ my_cal = icalendar.Calendar.from_ical(ical_file.read())
 
 w = xmltv.Writer()
 list_of_programs = []
-channel_id = "test_id"
+channel_id = sys.argv[1]
 channel_dict = {}
 
 
