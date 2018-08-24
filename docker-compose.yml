@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  ical-to-xmltv:
+
+    build: .
+    container_name: ical-to-xmltv
+
+    volumes:
+      - ./data:/app/data
+      - ./src/run.sh:/app/run.sh
