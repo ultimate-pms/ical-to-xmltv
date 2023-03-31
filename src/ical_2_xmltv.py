@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf8 -*-
 from __future__ import unicode_literals
 
@@ -8,26 +8,28 @@ description: a really straight forward, quick and dirty iCal to xmltv converter
 """
 
 import icalendar
-import xmltv
+from xmltv import xmltv_helpers
+from xmltv.models import xmltv
+from pathlib import Path
 import sys
 
 ical_file = open("./basic.ics", 'rb')
-xmltv_file = open("./basic.xml", 'w')
+xmltv_file = Path("./basic.xml")
 
 my_cal = icalendar.Calendar.from_ical(ical_file.read())
 
-w = xmltv.Writer()
-list_of_programs = []
 channel_id = sys.argv[1]
-channel_dict = {}
-
+channel = None
+tv = xmltv.Tv()
 
 for a_program in my_cal.walk():
     # the first elements are descriptive of the calendar and the timezones
-    if not channel_dict:
-        channel_dict = {"id": channel_id,
-                        "display-name": [a_program.get("X-WR-CALNAME").title()]
-                        }
+    if not channel:
+        channel = xmltv.Channel(
+            id=channel_id,
+            display_name=[a_program.get("X-WR-CALNAME").title()]
+        )
+        tv.channel.append(channel)
         continue
     if a_program.get("TZID") or a_program.get("TZNAME"):
         # skip the lines about timezone information
@@ -35,11 +37,11 @@ for a_program in my_cal.walk():
     start_time = a_program.get("DTSTART")
     if start_time:
         start_time = start_time.dt
-        start_time = start_time.strftime(xmltv.date_format)
+        start_time = start_time.strftime('%Y%m%d%H%M%S %Z')
     end_time = a_program.get("DTEND")
     if end_time:
         end_time = end_time.dt
-        end_time = end_time.strftime(xmltv.date_format)
+        end_time = end_time.strftime('%Y%m%d%H%M%S %Z')
     else:
         # if there is no end time the end time is set as the start time
         end_time = start_time
@@ -47,20 +49,16 @@ for a_program in my_cal.walk():
     description = a_program.get("DESCRIPTION")
     if description:
         description = description.title()
-    prog_dict = {"channel": channel_id,
-                 "start": start_time,
-                 "stop": end_time,
-                 "sub-title": [(description, u'')],
-                 "title": [(summary, u'')]
-                 }
-    list_of_programs.append(prog_dict)
+    program = xmltv.Programme(
+        channel=channel_id,
+        start=start_time,
+        stop=end_time,
+        sub_title=description,
+        title=summary
+    )
+    tv.programme.append(program)
 
-w.addChannel(channel_dict)
-for a_program in list_of_programs:
-    w.addProgramme(a_program)
-
-w.write(xmltv_file, pretty_print=True)
-
+xmltv_helpers.write_file_from_xml(xmltv_file, tv)
 
 """
 # example of iCal data parsed :
