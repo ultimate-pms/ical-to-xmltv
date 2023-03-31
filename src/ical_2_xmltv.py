@@ -5,16 +5,6 @@ from __future__ import unicode_literals
 """
 author: luapmartin
 description: a really straight forward, quick and dirty iCal to xmltv converter
-
-requirements.txt
-
-icalendar==3.11.7
-pkg-resources==0.0.0
-python-dateutil==2.6.1
-python-xmltv==1.4.3
-pytz==2017.2
-six==1.11.0
-
 """
 
 import icalendar
