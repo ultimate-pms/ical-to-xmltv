@@ -3,3 +3,4 @@ python-dateutil==2.6.1
 py-xmltv==1.0.8
 pytz==2023.3
 six==1.11.0
+requests

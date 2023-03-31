@@ -12,13 +12,14 @@ from xmltv import xmltv_helpers
 from xmltv.models import xmltv
 from pathlib import Path
 import sys
+import requests
 
-ical_file = open("./basic.ics", 'rb')
 xmltv_file = Path("./basic.xml")
 
-my_cal = icalendar.Calendar.from_ical(ical_file.read())
+url = sys.argv[1]
+channel_id = sys.argv[2]
 
-channel_id = sys.argv[1]
+my_cal = icalendar.Calendar.from_ical(requests.get(url).text)
 channel = None
 tv = xmltv.Tv()
 
